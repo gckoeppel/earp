@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>EARP - Elevation Assisting Route Planner</title>
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+<link href="http://twitter.github.com/bootstrap/assets/css/bootstrap.css" rel="stylesheet">
+<style type="text/css">
+#mapcanvas img {
+    max-width: none;
+}
+
+
+
+.contextmenu{
+	visibility:hidden;
+	background:#ffffff;
+	z-index: 10;  
+	position: relative;
+	width: 160px;
+}
+
+</style>
+
+<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true"></script>
+<script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script type="text/javascript" src="bootstrap/js/bootstrap.js"></script>
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script type="text/javascript" src="js/map.js"></script>
+<script type="text/javascript" src="js/directions.js"></script>
+<script type="text/javascript" src="js/graph.js"></script>
+</head>
+<body onload="initialize()">
+<div class="container-fluid">
+	<div class="row-fluid">
+		<div class="span2">
+			<h1>EARP</h1>
+			<p>Elevation Assisting Route Planner</p>
+			<div class="accordion" id="accordion2">
+				<div class="accordion-group">
+					<div class="accordion-heading">
+						<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
+							Route Options
+						</a>
+					</div>
+					<div id="collapseOne" class="accordion-body collapse in">
+						<div class="accordion-inner">
+							Origin<br>
+							<input type="text" name="start" id="start" onchange="directionsAddrFrom()"> <br>
+							Destination<br>
+							<input type="text" name="end" id="end" onchange="directionsAddrTo()"> <br>
+							Mode of Travel:
+							<select id="mode" onchange="updateRoute();">
+								<option value="DRIVING">Driving</option>
+								<option value="WALKING">Walking</option>
+								<option value="BICYCLING">Bicycling</option>
+							</select>
+							<form onclick="updateRoute();">
+								<input type="checkbox" name="tolls" id="tolls" value="true">Avoid tolls<br>
+								<input type="checkbox" name="highways" id="highways" value="true">Avoid hithgways<br>
+							</form>
+							<form onclick="secondRoute();">
+								<input type="checkbox" name="route2" id="route2" value="true">Activate second route<br>
+							</form>
+							<button class="btn btn-primary" onclick="drawChart()">Draw Elevation Graph</button><br>
+							<br>
+						</div>
+					</div>
+				</div>
+				<div class="accordion-group">
+					<div class="accordion-heading">
+						<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseDI">
+							Driving Instructions
+						</a>
+					</div>
+					<div id="collapseDI" class="accordion-body collapse">
+						<div class="accordion-inner">
+							<div class="btn-group" data-toggle="buttons-radio">
+								<button id="dIroute1" type="button" class="btn" onclick="showDrivingInstructions(1)">Route 1</button>
+								<button id="dIroute2" type="button" class="btn" onclick="showDrivingInstructions(2)">Route 2</button>
+							</div>
+							<div id="drivingInstructions">
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="accordion-group">
+					<div class="accordion-heading">
+						<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
+							Route Statistics
+						</a>
+					</div>
+					<div id="collapseTwo" class="accordion-body collapse">
+						<div class="accordion-inner">
+							<table class="table table-striped">
+							<tr>
+								<td>Route</td>
+								<td>1</td>
+								<td>2</td>
+							</tr>
+							<tr>
+								<td>total distance</td>
+								<td><span id="total1"></span></td>
+								<td><span id="total2"></span></td>
+							</tr>
+							<tr>
+								<td>climb</td>
+								<td><span id="mUp1"></span></td>
+								<td><span id="mUp2"></span></td>
+							</tr>
+							<tr>
+								<td>descent</td>
+								<td><span id="mDown1"></span></td>
+								<td><span id="mDown2"></span></td>
+							</tr>
+							<tr>
+								<td>highest point</td>
+								<td><span id="mPeak1"></span></td>
+								<td><span id="mPeak2"></span></td>
+							</tr>
+							<tr>
+								<td>lowest point</td>
+								<td><span id="mDip1"></span></td>
+								<td><span id="mDip2"></span></td>
+							</tr>
+							</table>
+						</div>
+					</div>
+				</div>
+				<div class="accordion-group">
+					<div class="accordion-heading">
+						<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseThree">
+							Service Status
+						</a>
+					</div>
+					<div id="collapseThree" class="accordion-body collapse">
+						<div class="accordion-inner">
+							<table class="table">
+								<tr id="sMap">
+									<td>Map</td>
+									<td><span id="statusMap"></span></td>
+								</tr>
+								<tr id="sDirection">
+									<td>Direction</td>
+									<td><span id="statusDir"></span></td>
+								</tr>
+								<tr id="sElevation">
+									<td>Elevation</td>
+									<td><span id="statusElev"></span></td>
+								</tr>								
+							</table>
+						</div>
+					</div>
+				</div>
+				<div class="accordion-group">
+					<div class="accordion-heading">
+						<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseFour">
+							About
+						</a>
+					</div>
+					<div id="collapseFour" class="accordion-body collapse">
+						<div class="accordion-inner">
+							Developed by <a href="http://www.gianclaudio.ch">gianclaudio</a><br>
+							Using the <a href="http://twitter.github.com/bootstrap/">twitter bootstrap</a> and <a href="https://developers.google.com/maps/">google maps api with directions, elevations and geocode.</a><br>
+							More information <a href="http://www.gianclaudio.ch">here,</a> code on <a href="https://github.com/gckoeppel/earp">github.</a><br>
+							Feedback to <a href="https://twitter.com/gian_claudio">twitter</a> or <a href="mailto:gckoeppel@gmail.com">mail.</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div><br>
+		<div class="span10">
+			<div id="mapcanvas"></div><br>
+			<div id="graph"></div>
+		</div>
+	</div>
+</div>
+  
+</body>
+</html>

@@ -15,20 +15,35 @@ var sMap = 0;
 var sDirection = 0;
 var sElevation = 0;
 var geocode;
+var mapcanvas;
+var graphcanvas;
 
 google.load("visualization", "1", {packages:["corechart"]});
 
 $(window).resize(function() {
-	$('#mapcanvas').first().height(window.innerHeight * 0.75)
-	$('#graph').first().height(window.innerHeight * 0.2)
+	$('#mapcanvas').first().height(window.innerHeight * 0.75);
+	$('#graph').first().height(window.innerHeight * 0.2);
+	$('#mapcanvas-phone').first().height(window.innerHeight * 0.5)
+	$('#graph-phone').first().height(window.innerHeight * 0.1)
+	
 });
 
+$(document).ready(function(){
+	$('body').on('shown','#asdfghtr', function (e) {
+	   google.maps.event.trigger(map, 'resize'); 
+	   console.log(dir[1].directionsDisplay);
+	   updateRoute();
+	});
+});
 
 function initialize() {
+	
 	//Set div height
 
 	$('#mapcanvas').first().height(window.innerHeight * 0.75)
 	$('#graph').first().height(window.innerHeight * 0.2)
+	$('#mapcanvas-phone').first().height(window.innerHeight * 0.5)
+	$('#graph-phone').first().height(window.innerHeight * 0.1)
 	
 	//Set default state
 	sMap = document.getElementById("sMap");
@@ -51,7 +66,20 @@ function initialize() {
 		mapTypeId: google.maps.MapTypeId.ROADMAP,
 		center: home
 	};
-	map = new google.maps.Map(document.getElementById("mapcanvas"), myOptions);
+	
+	if($(window).width() <= 767)
+	{
+		mapcanvas = "mapcanvas-phone";
+		graphcanvas = "graphcanvas-phone";
+		$('#options-phone').load('earp.html #options');
+	}
+	else
+	{
+		mapcanvas = "mapcanvas";
+		graphcanvas = "graphcanvas";
+	}
+	map = new google.maps.Map(document.getElementById(mapcanvas), myOptions);
+	
 	// Locate if geolocation is active
 	if(navigator.geolocation) {
 		navigator.geolocation.getCurrentPosition(function(position) {
@@ -153,8 +181,8 @@ function getCanvasXY(caurrentLatLng){
 }
 
 function setMenuXY(caurrentLatLng){
-	var mapWidth = $('#mapcanvas').width();
-	var mapHeight = $('#mapcanvas').height();
+	var mapWidth = $('#'+mapcanvas).width();
+	var mapHeight = $('#'+mapcanvas).height();
 	var menuWidth = $('.contextmenu').width();
 	var menuHeight = $('.contextmenu').height();
 	var clickedPosition = getCanvasXY(caurrentLatLng);

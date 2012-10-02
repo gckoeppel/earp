@@ -50,7 +50,7 @@ function drawComplete() {
 		vAxis: {title: 'm'},
 		legend: {position: 'none'}
 	};
-	chart = new google.visualization.AreaChart(document.getElementById('graph'));
+	chart = new google.visualization.AreaChart(document.getElementById(graphcanvas));
 	chart.draw(chartdata, options);
 	google.visualization.events.addListener(chart, 'onmouseover', onmouseoverChart );
 	google.visualization.events.addListener(chart, 'onmouseout', onmouseoutChart );

@@ -93,13 +93,17 @@ function calcRoute() {
 }
 
 function updateRoute() {
-	dir[1].route=dir[1].directionsDisplay.getDirections();
-	dir[1].waypoints=dir[1].route.ub.waypoints;
+	console.log(dir[1]);
+	dir[1].route = dir[1].directionsDisplay.getDirections();
+	//dir[1].waypoints = dir[1].route.ub.waypoints;
+	
+	dir[1].waypoints = dir[1].route.routes.overview_path;
 	
 	if(null != dir[2].directionsDisplay.directions)
 	{
 		dir[2].route=dir[2].directionsDisplay.getDirections();
-		dir[2].waypoints=dir[2].route.ub.waypoints;
+		//ir[2].waypoints=dir[2].route.ub.waypoints;
+		dir[2].waypoints=dir[2].route.routes.overview_path;
 	}
 	
 	var selectedMode = document.getElementById("mode").value;

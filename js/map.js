@@ -120,7 +120,7 @@ function initialize() {
 		calculateDrivingInstructions(1);
 		if(null != dir[2].directionsDisplay.directions)
 		{
-			checkIfMoved(dir[1].directionsDisplay.directions.Kb, dir[2].directionsDisplay.directions.Kb);
+			checkIfMoved(dir[1].directionsDisplay.directions.Nb, dir[2].directionsDisplay.directions.Nb);
 		}
 	});
 	google.maps.event.addListener(dir[2].directionsDisplay, 'directions_changed', function() {
@@ -128,13 +128,14 @@ function initialize() {
 		calculateDrivingInstructions(2);
 		if(null != dir[1].directionsDisplay.directions)
 		{
-			checkIfMoved(dir[2].directionsDisplay.directions.Kb, dir[1].directionsDisplay.directions.Kb);
+			checkIfMoved(dir[2].directionsDisplay.directions.Nb, dir[1].directionsDisplay.directions.Nb);
 		}
 	});
 }
 
 function checkIfMoved(changedDir, oldDir)
 {
+	console.log(changedDir);
 	if((changedDir.destination.lat() != oldDir.destination.lat()) || (changedDir.destination.lng() != oldDir.destination.lng()))
 	{
 		end = new google.maps.LatLng(changedDir.destination.lat(), changedDir.destination.lng());
